@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUESTA AI - Study Buddy</title>
+<link rel="icon" href="ChatGPT Image Sep 13, 2026, 09_36_11 PM.png">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(circle at 15% 15%, #e6d9ff, transparent 35%),
+        radial-gradient(circle at 85% 80%, #d9ccff, transparent 35%),
+        linear-gradient(135deg, #f7f2ff, #e8dcff);
+    color: #321078;
+    padding-bottom: 40px;
+}
+
+.nav-container { padding: 15px 5%; }
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 14px 25px;
+    border: 1px solid rgba(255,255,255,.8);
+    border-radius: 22px;
+    background: rgba(255,255,255,.55);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 8px 30px rgba(75,35,140,.12);
+}
+
+.questa-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.questa-brand img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+}
+
+.brand-name h1 {
+    font-family: Georgia, serif;
+    font-size: 27px;
+    letter-spacing: 4px;
+    color: #35118c;
+}
+
+.brand-name span {
+    display: block;
+    font-size: 8px;
+    letter-spacing: 4px;
+    font-weight: bold;
+    color: #7452b5;
+    margin-top: 3px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #493080;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.nav-links a:hover {
+    color: #a04dff;
+    text-shadow: 0 0 10px #c9a4ff;
+}
+
+.page-heading {
+    text-align: center;
+    margin: 45px 15px 25px;
+}
+
+.page-heading h2 {
+    font-family: Georgia, serif;
+    font-size: clamp(27px, 5vw, 40px);
+    color: #35118c;
+    margin-bottom: 10px;
+}
+
+.page-heading p {
+    color: #735c9e;
+    line-height: 1.6;
+}
+
+.quiz-card {
+    width: min(850px, 92%);
+    margin: 25px auto;
+    padding: 30px;
+    border: 1px solid rgba(255,255,255,.9);
+    border-radius: 25px;
+    background: rgba(255,255,255,.55);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 15px 45px rgba(76,38,140,.15);
+}
+
+.selection-area {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 9px;
+    color: #452080;
+}
+
+select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #d2c0f5;
+    border-radius: 12px;
+    background: rgba(255,255,255,.85);
+    color: #422078;
+    font-size: 15px;
+    outline: none;
+}
+
+.primary-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 13px;
+    background: linear-gradient(120deg, #5420a8, #9a55e9);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(91,39,165,.25);
+    transition: .3s;
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(91,39,165,.35);
+}
+
+.quiz-area {
+    display: none;
+    margin-top: 28px;
+}
+
+.quiz-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    color: #7045aa;
+    font-weight: bold;
+}
+
+.progress-track {
+    height: 8px;
+    background: #e4d8f8;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #6428b4, #b17aff);
+    transition: .3s;
+}
+
+.question {
+    font-size: 21px;
+    line-height: 1.5;
+    color: #321078;
+    margin-bottom: 22px;
+}
+
+.options {
+    display: grid;
+    gap: 12px;
+}
+
+.option-btn {
+    text-align: left;
+    padding: 15px;
+    border: 1px solid #d9c9f3;
+    border-radius: 13px;
+    background: rgba(255,255,255,.7);
+    color: #452080;
+    font-size: 15px;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.option-btn:hover:not(:disabled) {
+    background: #eee4ff;
+    border-color: #9b6be0;
+    transform: translateX(4px);
+}
+
+.option-btn:disabled { cursor: default; }
+
+.option-btn.correct {
+    background: #d9f8e5;
+    border-color: #38a66b;
+    color: #17643b;
+}
+
+.option-btn.wrong {
+    background: #ffe1e1;
+    border-color: #df6868;
+    color: #a52d2d;
+}
+
+.feedback {
+    display: none;
+    padding: 15px;
+    border-radius: 13px;
+    margin-top: 18px;
+    line-height: 1.6;
+}
+
+.feedback.correct {
+    display: block;
+    background: #e1f8e9;
+    color: #17643b;
+}
+
+.feedback.wrong {
+    display: block;
+    background: #ffe7e7;
+    color: #9b2929;
+}
+
+.next-btn {
+    margin-top: 20px;
+    display: none;
+}
+
+.result-area {
+    display: none;
+    text-align: center;
+    padding: 30px 10px;
+}
+
+.result-area h2 {
+    font-family: Georgia, serif;
+    margin-bottom: 15px;
+    color: #5420a8;
+}
+
+.score {
+    font-size: 40px;
+    font-weight: bold;
+    color: #7135bd;
+    margin: 15px 0;
+}
+
+@media(max-width:600px) {
+    .navbar { justify-content: center; }
+    .nav-links { justify-content: center; gap: 15px; }
+    .selection-area { grid-template-columns: 1fr; }
+    .quiz-card { padding: 22px 17px; }
+}
+</style>
+</head>
+
+<body>
+
+<header class="nav-container">
+    <nav class="navbar">
+        <div class="questa-brand">
+            <img src="ChatGPT Image Sep 13, 2026, 10_13_04 PM.png" alt="QUESTA Logo">
+            <div class="brand-name">
+                <h1>QUESTA</h1>
+                <span>STUDY BUDDY</span>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="question-banks.html">Question Banks</a>
+            <a href="ask-ai.html">Ask AI</a>
+        </div>
+    </nav>
+</header>
+
+<section class="page-heading">
+    <h2>QUESTA AI Practice Zone</h2>
+    <p>Learn, practise and improve your knowledge one question at a time.</p>
+</section>
+
+<main class="quiz-card">
+
+    <div id="setupArea">
+        <div class="selection-area">
+
+            <div class="field">
+                <label for="classSelect">Select Class</label>
+                <select id="classSelect" onchange="updateSubjects()">
+                    <option value="10">Class 10</option>
+                    <option value="11">Class 11</option>
+                    <option value="12">Class 12</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="subjectSelect">Select Subject</label>
+                <select id="subjectSelect"></select>
+            </div>
+
+        </div>
+
+        <button class="primary-btn" onclick="startQuiz()">
+            Start Practice →
+        </button>
+    </div>
+
+    <div class="quiz-area" id="quizArea">
+
+        <div class="quiz-top">
+            <span id="subjectTitle">Subject</span>
+            <span id="questionCount">Question 1 / 5</span>
+            <span id="scoreCount">Score: 0</span>
+        </div>
+
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <h3 class="question" id="questionText"></h3>
+
+        <div class="options" id="optionsArea"></div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <button class="primary-btn next-btn" id="nextBtn"
+                onclick="nextQuestion()">
+            Next Question →
+        </button>
+
+    </div>
+
+    <div class="result-area" id="resultArea">
+        <h2>Practice Completed! 🎉</h2>
+        <p>Your final score is</p>
+        <div class="score" id="finalScore"></div>
+        <p id="resultMessage"></p>
+        <br>
+        <button class="primary-btn" onclick="tryAgain()">
+            Practise Again
+        </button>
+    </div>
+
+</main>
+
+<script>
+
+const subjects = {
+    10: ["Mathematics", "Science", "Social Science"],
+    11: ["Mathematics", "Chemistry", "Computer Science"],
+    12: ["Biology", "Computer Science", "Physics"]
+};
+
+const questionBank = {
+
+    "Mathematics": [
+        {q:"What is the value of 5²?",o:["10","15","25","20"],a:2,e:"5 × 5 = 25."},
+        {q:"What is the square root of 144?",o:["10","12","14","16"],a:1,e:"12 × 12 = 144."},
+        {q:"What is the sum of the angles of a triangle?",o:["90°","180°","270°","360°"],a:1,e:"The interior angles of a triangle add up to 180°."},
+        {q:"What is the value of π approximately?",o:["2.14","3.14","4.13","3.41"],a:1,e:"Pi is approximately 3.14."},
+        {q:"What is 15 × 4?",o:["45","50","60","65"],a:2,e:"15 multiplied by 4 equals 60."}
+    ],
+
+    "Science": [
+        {q:"Which gas do plants absorb during photosynthesis?",o:["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"],a:2,e:"Plants absorb carbon dioxide during photosynthesis."},
+        {q:"What is the chemical formula of water?",o:["CO2","H2O","O2","NaCl"],a:1,e:"Water contains two hydrogen atoms and one oxygen atom."},
+        {q:"Which organ pumps blood throughout the body?",o:["Lungs","Brain","Kidney","Heart"],a:3,e:"The heart pumps blood throughout the body."},
+        {q:"What is the SI unit of force?",o:["Joule","Newton","Watt","Pascal"],a:1,e:"Force is measured in newtons."},
+        {q:"Which part of a plant absorbs water?",o:["Flower","Leaf","Root","Fruit"],a:2,e:"Roots absorb water and minerals from the soil."}
+    ],
+
+    "Social Science": [
+        {q:"Who was the first Prime Minister of India?",o:["Mahatma Gandhi","Jawaharlal Nehru","Sardar Patel","Rajendra Prasad"],a:1,e:"Jawaharlal Nehru was India's first Prime Minister."},
+        {q:"What is the capital of Tamil Nadu?",o:["Madurai","Coimbatore","Chennai","Trichy"],a:2,e:"Chennai is the capital of Tamil Nadu."},
+        {q:"Which is the largest continent?",o:["Africa","Asia","Europe","Australia"],a:1,e:"Asia is the largest continent."},
+        {q:"When did India gain independence?",o:["1945","1946","1947","1950"],a:2,e:"India became independent on 15 August 1947."},
+        {q:"Which line divides Earth into Northern and Southern hemispheres?",o:["Tropic of Cancer","Equator","Prime Meridian","Arctic Circle"],a:1,e:"The Equator divides Earth into two hemispheres."}
+    ],
+
+    "Chemistry": [
+        {q:"What is the atomic number of oxygen?",o:["6","7","8","9"],a:2,e:"Oxygen has atomic number 8."},
+        {q:"A solution with pH less than 7 is:",o:["Acidic","Basic","Neutral","Salty"],a:0,e:"A pH below 7 indicates an acidic solution."},
+        {q:"What is the chemical symbol of sodium?",o:["S","So","Na","N"],a:2,e:"The chemical symbol of sodium is Na."},
+        {q:"Which gas is released during photosynthesis?",o:["Carbon dioxide","Oxygen","Nitrogen","Hydrogen"],a:1,e:"Oxygen is released during photosynthesis."},
+        {q:"What is the formula of common salt?",o:["H2O","NaCl","CO2","HCl"],a:1,e:"Common salt is sodium chloride, NaCl."}
+    ],
+
+    "Computer Science": [
+        {q:"What does CPU stand for?",o:["Central Processing Unit","Computer Personal Unit","Central Program Utility","Control Processing User"],a:0,e:"CPU stands for Central Processing Unit."},
+        {q:"Which language is commonly used for web page structure?",o:["Python","HTML","SQL","C"],a:1,e:"HTML is used to structure web pages."},
+        {q:"Which of these is an input device?",o:["Monitor","Printer","Keyboard","Speaker"],a:2,e:"A keyboard is used to enter data into a computer."},
+        {q:"What does RAM stand for?",o:["Read Access Memory","Random Access Memory","Run All Memory","Ready Application Memory"],a:1,e:"RAM stands for Random Access Memory."},
+        {q:"Which number system uses only 0 and 1?",o:["Decimal","Octal","Binary","Hexadecimal"],a:2,e:"The binary number system uses 0 and 1."}
+    ],
+
+    "Biology": [
+        {q:"What is the basic structural unit of life?",o:["Tissue","Organ","Cell","System"],a:2,e:"The cell is the basic structural and functional unit of life."},
+        {q:"Which organelle is called the powerhouse of the cell?",o:["Nucleus","Mitochondria","Ribosome","Vacuole"],a:1,e:"Mitochondria produce much of the cell's usable energy."},
+        {q:"Which pigment helps plants absorb light?",o:["Haemoglobin","Chlorophyll","Melanin","Keratin"],a:1,e:"Chlorophyll absorbs light for photosynthesis."},
+        {q:"Which blood cells help fight infection?",o:["Red blood cells","White blood cells","Platelets","Plasma"],a:1,e:"White blood cells help defend the body against infections."},
+        {q:"Which organ is mainly responsible for filtering blood?",o:["Heart","Lungs","Kidneys","Stomach"],a:2,e:"The kidneys filter waste from the blood."}
+    ],
+
+    "Physics": [
+        {q:"What is the SI unit of electric current?",o:["Volt","Ohm","Ampere","Watt"],a:2,e:"Electric current is measured in amperes."},
+        {q:"Which instrument measures temperature?",o:["Barometer","Thermometer","Ammeter","Voltmeter"],a:1,e:"A thermometer measures temperature."},
+        {q:"What is the speed of light in vacuum approximately?",o:["3 × 10⁸ m/s","3 × 10⁶ m/s","300 m/s","1500 m/s"],a:0,e:"Light travels at approximately 3 × 10⁸ metres per second in vacuum."},
+        {q:"Which type of lens converges light?",o:["Concave","Convex","Plane","Cylindrical"],a:1,e:"A convex lens converges parallel light rays."},
+        {q:"What is the SI unit of energy?",o:["Newton","Joule","Pascal","Ampere"],a:1,e:"Energy is measured in joules."}
+    ]
+
+};
+
+let currentQuestions = [];
+let currentIndex = 0;
+let score = 0;
+let answered = false;
+let selectedClass = "";
+let selectedSubject = "";
+
+function updateSubjects() {
+    const classValue = document.getElementById("classSelect").value;
+    const subjectSelect = document.getElementById("subjectSelect");
+
+    subjectSelect.innerHTML = "";
+
+    subjects[classValue].forEach(subject => {
+        const option = document.createElement("option");
+        option.value = subject;
+        option.textContent = subject;
+        subjectSelect.appendChild(option);
+    });
+}
+
+function startQuiz() {
+    selectedClass = document.getElementById("classSelect").value;
+    selectedSubject = document.getElementById("subjectSelect").value;
+
+    currentQuestions = [...questionBank[selectedSubject]]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 5);
+
+    currentIndex = 0;
+    score = 0;
+
+    document.getElementById("setupArea").style.display = "none";
+    document.getElementById("resultArea").style.display = "none";
+    document.getElementById("quizArea").style.display = "block";
+
+    showQuestion();
+}
+
+function showQuestion() {
+    answered = false;
+
+    const question = currentQuestions[currentIndex];
+
+    document.getElementById("subjectTitle").textContent =
+        "Class " + selectedClass + " • " + selectedSubject;
+
+    document.getElementById("questionCount").textContent =
+        "Question " + (currentIndex + 1) + " / 5";
+
+    document.getElementById("scoreCount").textContent =
+        "Score: " + score;
+
+    document.getElementById("progressFill").style.width =
+        (currentIndex / 5 * 100) + "%";
+
+    document.getElementById("questionText").textContent =
+        (currentIndex + 1) + ". " + question.q;
+
+    const optionsArea = document.getElementById("optionsArea");
+    optionsArea.innerHTML = "";
+
+    document.getElementById("feedback").className = "feedback";
+    document.getElementById("feedback").textContent = "";
+    document.getElementById("nextBtn").style.display = "none";
+
+    question.o.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.className = "option-btn";
+        button.textContent =
+            String.fromCharCode(65 + index) + ". " + option;
+
+        button.onclick = () => checkAnswer(index, button);
+
+        optionsArea.appendChild(button);
+    });
+}
+
+function checkAnswer(selected, clickedButton) {
+    if (answered) return;
+    answered = true;
+
+    const question = currentQuestions[currentIndex];
+    const allButtons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback");
+
+    allButtons.forEach((button, index) => {
+        button.disabled = true;
+
+        if (index === question.a) {
+            button.classList.add("correct");
+        }
+    });
+
+    if (selected === question.a) {
+        score++;
+        feedback.className = "feedback correct";
+        feedback.textContent = "✓ Correct answer! " + question.e;
+    } else {
+        clickedButton.classList.add("wrong");
+        feedback.className = "feedback wrong";
+        feedback.textContent =
+            "✗ Incorrect. Correct answer: " +
+            question.o[question.a] + ". " + question.e;
+    }
+
+    document.getElementById("scoreCount").textContent =
+        "Score: " + score;
+
+    document.getElementById("nextBtn").style.display = "block";
+
+    document.getElementById("nextBtn").textContent =
+        currentIndex === 4 ? "View Results →" : "Next Question →";
+}
+
+function nextQuestion() {
+    currentIndex++;
+
+    if (currentIndex < currentQuestions.length) {
+        showQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById("quizArea").style.display = "none";
+    document.getElementById("resultArea").style.display = "block";
+
+    document.getElementById("finalScore").textContent =
+        score + " / 5";
+
+    let message = "";
+
+    if (score === 5) {
+        message = "Excellent! You got all the answers correct!";
+    } else if (score >= 3) {
+        message = "Great effort! Keep practising.";
+    } else {
+        message = "Keep learning. You can improve with practice!";
+    }
+
+    document.getElementById("resultMessage").textContent = message;
+}
+
+function tryAgain() {
+    document.getElementById("resultArea").style.display = "none";
+    document.getElementById("setupArea").style.display = "block";
+
+    document.getElementById("classSelect").value = selectedClass;
+    updateSubjects();
+
+    document.getElementById("subjectSelect").value = selectedSubject;
+}
+
+updateSubjects();
+
+</script>
+
+</body>
+</html>

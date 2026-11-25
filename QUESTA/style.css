@@ -1,0 +1,74 @@
+/* Name Popup */
+.name-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(45, 15, 80, 0.55);
+  backdrop-filter: blur(15px);
+}
+
+.name-card {
+  width: min(400px, 90%);
+  padding: 40px 30px;
+  text-align: center;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 25px 70px rgba(50, 10, 100, 0.3);
+  backdrop-filter: blur(25px);
+}
+
+.logo-circle {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #8b3cff, #5314c8);
+  color: white;
+  font: bold 35px Georgia, serif;
+  box-shadow: 0 12px 25px rgba(90, 20, 200, 0.3);
+}
+
+.name-card h2 {
+  color: #32105c;
+  margin-bottom: 8px;
+  font-family: Georgia, serif;
+}
+
+.name-card p {
+  color: #725c85;
+  margin-bottom: 22px;
+}
+
+.name-card input {
+  width: 100%;
+  padding: 15px 18px;
+  border: 1px solid #d9c8ee;
+  border-radius: 15px;
+  outline: none;
+  font-size: 16px;
+  background: rgba(255,255,255,0.8);
+}
+
+.name-card input:focus {
+  border-color: #7427e8;
+  box-shadow: 0 0 0 4px rgba(116,39,232,0.1);
+}
+
+.name-card button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 15px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #812aff, #4e12c7);
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}

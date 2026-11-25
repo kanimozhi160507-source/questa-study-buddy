@@ -1,0 +1,2308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="ChatGPT Image Sep 13, 2026, 09_36_11 PM.png">
+<title>QUESTA – Study Buddy</title>
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<script>
+function openPractice() {
+
+    const aiSection = document.getElementById("ai");
+
+    aiSection.innerHTML = `
+        <div class="ai-box">
+
+            <h2>🤖 QUESTA AI</h2>
+
+            <p>1-Mark Question Practice</p>
+
+            <div class="ai-form">
+
+                <label>Choose Class</label>
+
+                <select id="aiClass">
+                    <option value="">Select Class</option>
+                    <option value="10th">10th</option>
+                    <option value="11th">11th</option>
+                    <option value="12th">12th</option>
+                </select>
+
+
+                <label>Choose Subject</label>
+
+                <select id="aiSubject">
+                    <option value="">Select Subject</option>
+                </select>
+
+
+                <label>Choose Topic</label>
+
+                <input
+                    type="text"
+                    id="aiTopic"
+                    placeholder="Enter topic"
+                >
+
+                <button
+                    class="ai-button"
+                    onclick="startAIPractice()"
+                >
+                    Start Practice →
+                </button>
+
+            </div>
+
+            <div id="aiQuestion"></div>
+
+        </div>
+    `;
+
+    document
+        .getElementById("aiClass")
+        .addEventListener("change", updateSubjects);
+}
+
+
+function updateSubjects() {
+
+    const className =
+        document.getElementById("aiClass").value;
+
+    const subjectSelect =
+        document.getElementById("aiSubject");
+
+    subjectSelect.innerHTML =
+        '<option value="">Select Subject</option>';
+
+    const subjects = {
+
+        "10th": [
+            "Mathematics",
+            "Science",
+            "Social Science",
+            "English",
+            "Tamil"
+        ],
+
+        "11th": [
+            "Mathematics",
+            "Physics",
+            "Chemistry",
+            "Computer Science",
+            "Biology",
+            "English",
+            "Tamil"
+        ],
+
+        "12th": [
+            "Mathematics",
+            "Physics",
+            "Chemistry",
+            "Computer Science",
+            "Biology",
+            "English",
+            "Tamil"
+        ]
+
+    };
+
+    if (subjects[className]) {
+
+        subjects[className].forEach(subject => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = subject;
+            option.textContent = subject;
+
+            subjectSelect.appendChild(option);
+
+        });
+
+    }
+}
+
+
+async function startAIPractice() {
+
+    const className =
+        document.getElementById("aiClass").value;
+
+    const subject =
+        document.getElementById("aiSubject").value;
+
+    const topic =
+        document.getElementById("aiTopic").value.trim();
+
+    const questionBox =
+        document.getElementById("aiQuestion");
+
+
+    if (!className || !subject || !topic) {
+
+        questionBox.innerHTML = `
+            <p>Please select your class, subject
+            and enter a topic.</p>
+        `;
+
+        return;
+    }
+
+
+    questionBox.innerHTML = `
+        <p>🤖 QUESTA AI is generating your
+        question...</p>
+    `;
+
+
+    try {
+
+        const response = await fetch(
+            "http://localhost:3000/generate-question",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    className: className,
+                    subject: subject,
+                    topic: topic
+
+                })
+
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error || "Something went wrong"
+            );
+
+        }
+
+
+        displayQuestion(data);
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        questionBox.innerHTML = `
+            <p>
+                ❌ Unable to generate the question.
+                Please make sure the QUESTA AI server
+                is running.
+            </p>
+        `;
+
+    }
+
+}
+
+
+function displayQuestion(data) {
+
+    const questionBox =
+        document.getElementById("aiQuestion");
+
+
+    let optionsHTML = "";
+
+
+    data.options.forEach((option, index) => {
+
+        optionsHTML += `
+            <label class="ai-option">
+
+                <input
+                    type="radio"
+                    name="answer"
+                    value="${option}"
+                >
+
+                ${String.fromCharCode(65 + index)}.
+                ${option}
+
+            </label>
+        `;
+
+    });
+
+
+    questionBox.innerHTML = `
+
+        <div class="ai-question-card">
+
+            <h3>📝 One-Mark Question</h3>
+
+            <p class="question-text">
+                ${data.question}
+            </p>
+
+            <div class="ai-options">
+
+                ${optionsHTML}
+
+            </div>
+
+            <button
+                class="ai-button"
+                onclick='checkAIAnswer(${JSON.stringify(data.answer)})'
+            >
+                Submit Answer
+            </button>
+
+            <div id="aiResult"></div>
+
+        </div>
+
+    `;
+
+}
+
+
+function checkAIAnswer(correctAnswer) {
+
+    const selected =
+        document.querySelector(
+            'input[name="answer"]:checked'
+        );
+
+    const result =
+        document.getElementById("aiResult");
+
+
+    if (!selected) {
+
+        result.innerHTML = `
+            <p>Please select an answer.</p>
+        `;
+
+        return;
+
+    }
+
+
+    if (selected.value === correctAnswer) {
+
+        result.innerHTML = `
+            <p>✅ Correct!</p>
+            <p>Correct answer: ${correctAnswer}</p>
+
+            <button
+                class="ai-button"
+                onclick="startAIPractice()"
+            >
+                Next Question →
+            </button>
+        `;
+
+    } else {
+
+        result.innerHTML = `
+            <p>❌ Incorrect!</p>
+            <p>Correct answer: ${correctAnswer}</p>
+
+            <button
+                class="ai-button"
+                onclick="startAIPractice()"
+            >
+                Next Question →
+            </button>
+        `;
+
+    }
+
+}
+</script>
+<body>
+<style>
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "DM Sans", sans-serif;
+    color: #21104f;
+    overflow-x: hidden;
+
+    background:
+        radial-gradient(circle at 10% 10%, #ffffff 0%, transparent 25%),
+        radial-gradient(circle at 90% 5%, #cdaaff 0%, transparent 28%),
+        radial-gradient(circle at 70% 50%, #e4d3ff 0%, transparent 30%),
+        linear-gradient(135deg, #f9f5ff, #eadcff, #d4b9ff);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    font-family: inherit;
+}
+
+
+/* =====================================================
+   FLOATING BACKGROUND SHAPES
+===================================================== */
+
+body::before {
+    content: "";
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: rgba(126, 49, 226, 0.12);
+    left: -300px;
+    top: 350px;
+    filter: blur(10px);
+    z-index: -2;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.45);
+    right: -300px;
+    bottom: 100px;
+    filter: blur(10px);
+    z-index: -2;
+}
+
+
+/* =====================================================
+   NAVBAR
+===================================================== */
+.nav-container {
+    width: 92%;
+    max-width: 950px;
+    margin: 20px auto 0;
+}
+
+.navbar {
+    min-height: 72px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 8px 15px 8px 22px;
+
+    border: 1px solid rgba(255,255,255,.85);
+    border-radius: 26px;
+
+    background: rgba(255,255,255,.36);
+
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+
+    box-shadow:
+        0 15px 45px rgba(77,35,145,.12),
+        inset 0 1px 0 rgba(255,255,255,.8);
+}
+nav a{
+    transition: all 0.3s ease;
+}
+nav a:hover{
+    color: #7c3aed;
+    transform: translateY(-3px);
+    text-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+}
+
+/* LOGO */
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 285px;
+}
+
+.logo-symbol {
+    width: 65px;
+    height: 58px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 48px;
+    color: #4710a7;
+}
+
+.logo-text {
+    font-family: "Playfair Display", serif;
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: #28105d;
+}
+
+.logo-subtitle {
+    display: block;
+    text-align: center;
+    margin-top: 4px;
+
+    font-size: 7px;
+    letter-spacing: 5px;
+    font-weight: 700;
+
+    color: #624c87;
+}
+
+
+/* NAV LINKS */
+
+.nav-links {
+    flex: 1;
+
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+}
+
+.nav-links a {
+    position: relative;
+
+    padding: 15px 4px 10px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #26105e;
+}
+
+.nav-links a.active::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 1px;
+
+    height: 3px;
+
+    border-radius: 20px;
+
+    background: #741ce0;
+}
+
+
+/* NAV BUTTONS */
+
+.nav-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.nav-btn {
+    width: 47px;
+    height: 47px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 17px;
+
+    border: 1px solid rgba(255,255,255,.8);
+
+    background: rgba(255,255,255,.45);
+
+    color: #29115f;
+
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+.nav-btn:hover {
+    transform: translateY(-3px);
+    background: rgba(255,255,255,.75);
+}
+
+.search {
+    width: 17px;
+    height: 17px;
+
+    border: 3px solid #29115f;
+    border-radius: 50%;
+
+    position: relative;
+}
+
+.search::after {
+    content: "";
+
+    position: absolute;
+
+    width: 8px;
+    height: 3px;
+
+    background: #29115f;
+
+    right: -7px;
+    bottom: -4px;
+
+    transform: rotate(45deg);
+
+    border-radius: 5px;
+}
+
+.sun {
+    font-size: 23px;
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.hero {
+    width: 90%;
+    max-width: 900px;
+
+    min-height: 410px;
+
+    margin: 25px auto 0;
+
+    display: grid;
+    grid-template-columns: 45% 55%;
+
+    align-items: center;
+}
+
+.hero-content {
+    padding-left: 15px;
+    z-index: 2;
+}
+h1,h2,h3{
+    transition: all 0.3s ease;
+}
+h1:hover, h2:hover, h3:hover{
+    transform: translateY(-4px)scale(1.02);
+    text-shadow: 0 6px 18px rgba(124, 58, 237, 0.35);
+}
+
+
+/* BADGE */
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 7px 15px;
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,.45);
+
+    border: 1px solid rgba(95,38,180,.25);
+
+    color: #4210a7;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    box-shadow: 0 5px 20px rgba(90,30,160,.1);
+}
+
+
+/* HERO TITLE */
+
+.hero h1 {
+    margin: 15px 0;
+
+    max-width: 450px;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 55px;
+
+    line-height: 1.02;
+
+    letter-spacing: -2px;
+
+    color: #171047;
+}
+
+.hero h1 span {
+    color: #6813d1;
+}
+
+
+/* HERO TEXT */
+
+.hero p {
+    max-width: 380px;
+
+    font-size: 16px;
+
+    line-height: 1.5;
+
+    color: #28175c;
+}
+
+
+/* PRIMARY BUTTON */
+
+.primary-btn {
+    margin-top: 17px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 13px 21px;
+
+    border: 1px solid rgba(255,255,255,.8);
+
+    border-radius: 30px;
+
+    background: linear-gradient(
+        135deg,
+        #8d2dff,
+        #5410bf
+    );
+
+    color: white;
+
+    font-weight: 700;
+    font-size: 13px;
+
+    box-shadow:
+        0 12px 30px rgba(101,20,210,.35);
+
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+}
+
+.button-circle {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+
+    background: white;
+
+    color: #6815d0;
+
+    font-size: 17px;
+}
+
+
+/* =====================================================
+   HERO ARTWORK
+===================================================== */
+
+.hero-art {
+    height: 390px;
+
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* GLASS ORB */
+
+.orb {
+    width: 350px;
+    height: 350px;
+
+    position: absolute;
+
+    right: 20px;
+    top: 20px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 25%,
+            rgba(255,255,255,.95),
+            rgba(203,165,255,.35) 40%,
+            rgba(120,37,210,.18) 70%,
+            rgba(255,255,255,.15)
+        );
+
+    border: 2px solid rgba(255,255,255,.75);
+
+    box-shadow:
+        inset 0 0 40px rgba(255,255,255,.8),
+        0 0 60px rgba(120,40,220,.22);
+}
+
+
+/* BOOK STACK */
+
+.books {
+    width: 360px;
+    height: 180px;
+
+    position: absolute;
+
+    right: 25px;
+    bottom: 50px;
+}
+
+
+/* BOOK */
+
+.book {
+    position: absolute;
+
+    width: 285px;
+    height: 42px;
+
+    border-radius: 8px 15px 10px 8px;
+
+    box-shadow:
+        0 13px 20px rgba(59,20,120,.28);
+}
+
+.book.one {
+    bottom: 0;
+    left: 50px;
+
+    background: linear-gradient(
+        90deg,
+        #4c11b4,
+        #8635ef
+    );
+
+    transform: rotate(-2deg);
+}
+
+.book.two {
+    bottom: 35px;
+    left: 70px;
+
+    background: linear-gradient(
+        90deg,
+        #6d18ce,
+        #c039dd
+    );
+
+    transform: rotate(1deg);
+}
+
+.book.three {
+    bottom: 70px;
+    left: 48px;
+
+    background: linear-gradient(
+        90deg,
+        #304eb9,
+        #703de1
+    );
+
+    transform: rotate(-2deg);
+}
+
+
+/* OPEN BOOK */
+
+.open-book {
+    width: 310px;
+    height: 90px;
+
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    filter:
+        drop-shadow(
+            0 15px 15px rgba(58,22,115,.25)
+        );
+}
+
+.page {
+    width: 145px;
+    height: 72px;
+
+    position: absolute;
+
+    bottom: 3px;
+
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #e8e0f6
+    );
+
+    border: 1px solid rgba(90,50,140,.12);
+}
+
+.page.left {
+    left: 5px;
+
+    border-radius: 8px 20px 5px 12px;
+
+    transform:
+        skewY(7deg)
+        rotate(-3deg);
+}
+
+.page.right {
+    right: 5px;
+
+    border-radius: 20px 8px 12px 5px;
+
+    transform:
+        skewY(-7deg)
+        rotate(3deg);
+}
+
+.page::after {
+    content: "";
+
+    position: absolute;
+
+    left: 20px;
+    right: 20px;
+    top: 22px;
+
+    height: 28px;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(100,75,140,.25) 0 2px,
+            transparent 2px 7px
+        );
+}
+
+
+/* GRADUATION CAP */
+
+.cap {
+    position: absolute;
+
+    z-index: 5;
+
+    right: 70px;
+    top: 115px;
+
+    width: 150px;
+    height: 70px;
+}
+
+.cap-top {
+    width: 150px;
+    height: 55px;
+
+    background: linear-gradient(
+        135deg,
+        #5312b7,
+        #9b43ed
+    );
+
+    clip-path: polygon(
+        50% 0,
+        100% 45%,
+        50% 85%,
+        0 45%
+    );
+
+    box-shadow: 0 10px 20px rgba(60,20,130,.3);
+}
+
+.cap-base {
+    width: 105px;
+    height: 28px;
+
+    position: absolute;
+
+    left: 23px;
+    top: 43px;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        90deg,
+        #4810a9,
+        #8e30e9
+    );
+}
+
+.tassel {
+    width: 4px;
+    height: 75px;
+
+    position: absolute;
+
+    right: 23px;
+    top: 30px;
+
+    background: #e2a52e;
+
+    transform: rotate(-8deg);
+}
+
+.tassel::after {
+    content: "";
+
+    width: 20px;
+    height: 25px;
+
+    position: absolute;
+
+    right: -8px;
+    bottom: -20px;
+
+    background: #e5a932;
+
+    border-radius: 5px;
+}
+
+
+/* HERO NOTES */
+
+.note {
+    position: absolute;
+
+    z-index: 10;
+
+    color: #4c149d;
+
+    font-family: "Playfair Display", serif;
+
+    font-style: italic;
+
+    font-size: 20px;
+
+    line-height: 1.2;
+}
+
+.note.learn {
+    left: 20px;
+    top: 45px;
+
+    transform: rotate(-7deg);
+}
+
+.note.future {
+    right: -2px;
+    top: 80px;
+
+    width: 105px;
+
+    padding: 15px;
+
+    border-radius: 18px;
+
+    color: white;
+
+    font-family: "DM Sans", sans-serif;
+
+    font-style: normal;
+
+    font-size: 14px;
+
+    background: rgba(160,95,240,.32);
+
+    border: 1px solid rgba(255,255,255,.65);
+
+    backdrop-filter: blur(10px);
+
+    box-shadow: 0 15px 30px rgba(75,25,150,.15);
+}
+
+
+/* =====================================================
+   CLASS SECTION
+===================================================== */
+
+.class-section {
+    width: 94%;
+    max-width: 950px;
+
+    margin: 0 auto;
+
+    padding: 22px 40px 28px;
+
+    border-radius: 28px;
+
+    border: 1px solid rgba(255,255,255,.8);
+
+    background: rgba(255,255,255,.30);
+
+    backdrop-filter: blur(25px);
+
+    box-shadow: var(--shadow);
+}
+
+
+/* SECTION LABEL */
+
+.section-label {
+    display: block;
+
+    width: fit-content;
+
+    margin: 0 auto 5px;
+
+    padding: 5px 13px;
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,.45);
+
+    color: #4c13aa;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+.section-title {
+    text-align: center;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 34px;
+
+    color: #17104f;
+
+    margin-bottom: 18px;
+}
+
+
+/* CLASS CARDS */
+
+.class-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+}
+
+.class-card {
+    min-height: 270px;
+
+    padding: 20px 16px;
+
+    text-align: center;
+
+    border-radius: 23px;
+
+    border: 1px solid rgba(255,255,255,.85);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.72),
+            rgba(255,255,255,.35)
+        );
+
+    box-shadow:
+        0 15px 35px rgba(81,33,150,.13),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+    transition: all 0.3s ease;
+}
+
+.class-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(90,40,160,0.25);
+}
+.class-card:hover h3,
+.class-card:hover p{
+    color: #6d28d9;
+}
+
+/* BOOK ICON */
+
+.grade-icon {
+    width: 100px;
+    height: 105px;
+
+    margin: 0 auto 12px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+
+    background: rgba(215,205,255,.42);
+
+    font-size: 65px;
+
+    filter: drop-shadow(
+        0 10px 8px rgba(80,30,150,.15)
+    );
+}
+
+.class-card:nth-child(1)
+.grade-icon {
+    color: #274fc7;
+}
+
+.class-card:nth-child(2)
+.grade-icon {
+    color: #18a987;
+}
+
+.class-card:nth-child(3)
+.grade-icon {
+    color: #d21cae;
+}
+
+
+.class-card h3 {
+    font-family: "Playfair Display", serif;
+
+    font-size: 22px;
+
+    margin-bottom: 7px;
+
+    color: #17105c;
+}
+
+.class-card p {
+    min-height: 45px;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+
+    color: #423479;
+}
+
+
+/* EXPLORE BUTTON */
+.explore-btn {
+    margin-top: 12px;
+
+    width: 155px;
+
+    padding: 9px;
+
+    border: none;
+
+    border-radius: 25px;
+
+    color: white;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    background: linear-gradient(
+        90deg,
+        #4e5ce8,
+        #7540ef
+    );
+
+    box-shadow:
+        0 7px 18px rgba(78,50,220,.25);
+
+    transition: .25s;
+}
+
+.class-card:nth-child(2)
+.explore-btn {
+    background: linear-gradient(
+        90deg,
+        #23bba1,
+        #35c7b4
+    );
+}
+
+.class-card:nth-child(3)
+.explore-btn {
+    background: linear-gradient(
+        90deg,
+        #c31dc1,
+        #ae21e7
+    );
+}
+
+.explore-btn:hover {
+    transform: scale(1.04);
+}
+
+
+/* =====================================================
+   FOUR STEP SECTION
+===================================================== */
+
+.steps-section {
+    width: 90%;
+    max-width: 900px;
+
+    margin: 42px auto 25px;
+}
+
+.steps-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 12px;
+}
+
+.step {
+    position: relative;
+
+    min-height: 150px;
+
+    padding: 18px 10px;
+
+    text-align: center;
+
+    border-radius: 20px;
+
+    border: 1px solid rgba(255,255,255,.78);
+
+    background: rgba(255,255,255,.34);
+
+    backdrop-filter: blur(20px);
+}
+
+.step-icon {
+    width: 65px;
+    height: 65px;
+
+    margin: -40px auto 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a84cff,
+            #5611c7
+        );
+
+    color: white;
+
+    font-size: 29px;
+
+    box-shadow:
+        0 10px 25px rgba(90,20,180,.28);
+}
+
+.step-number {
+    color: #7140c9;
+
+    font-weight: 800;
+
+    font-size: 13px;
+
+    margin-bottom: 4px;
+}
+
+.step h3 {
+    font-size: 16px;
+
+    color: #160b52;
+
+    margin-bottom: 7px;
+}
+
+.step p {
+    font-size: 12px;
+
+    line-height: 1.4;
+
+    color: #68558a;
+}
+
+
+/* ARROWS */
+
+.step:not(:last-child)::after {
+    content: "→";
+
+    position: absolute;
+
+    right: -18px;
+    top: 60px;
+
+    z-index: 5;
+
+    font-size: 28px;
+
+    color: #8342e2;
+}
+
+
+/* =====================================================
+   AI SECTION
+===================================================== */
+
+.ai-section {
+    width: 94%;
+    max-width: 950px;
+
+    min-height: 190px;
+
+    margin: 30px auto 0;
+
+    padding: 25px 35px;
+
+    display: grid;
+
+    grid-template-columns: 25% 50% 25%;
+
+    align-items: center;
+
+    border-radius: 32px 32px 0 0;
+
+    color: white;
+
+    background:
+        radial-gradient(
+            circle at 20% 50%,
+            rgba(180,90,255,.45),
+            transparent 30%
+        ),
+        linear-gradient(
+            120deg,
+            #48118e,
+            #6f20d1,
+            #3d137d
+        );
+
+    box-shadow:
+        0 -10px 50px rgba(79,22,160,.25);
+
+    overflow: hidden;
+}
+
+
+/* ROBOT */
+
+.robot {
+    width: 125px;
+    height: 110px;
+
+    margin: auto;
+
+    position: relative;
+}
+
+.robot-head {
+    width: 105px;
+    height: 78px;
+
+    position: absolute;
+
+    left: 10px;
+    top: 10px;
+
+    border-radius: 35px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #bca9e8
+        );
+
+    border: 3px solid #e3d9ff;
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.2);
+}
+
+.robot-eye {
+    width: 14px;
+    height: 14px;
+
+    position: absolute;
+
+    top: 31px;
+
+    border-radius: 50%;
+
+    background: #6b24d9;
+
+    box-shadow: 0 0 10px #a56aff;
+}
+
+.robot-eye.left {
+    left: 29px;
+}
+
+.robot-eye.right {
+    right: 29px;
+}
+
+.robot-mouth {
+    width: 32px;
+    height: 12px;
+
+    position: absolute;
+
+    left: 34px;
+    bottom: 14px;
+
+    border-bottom: 4px solid #6b24d9;
+
+    border-radius: 50%;
+}
+
+.robot-body {
+    width: 75px;
+    height: 45px;
+
+    position: absolute;
+
+    left: 25px;
+    top: 75px;
+
+    border-radius: 22px;
+
+    background: #d6c9ef;
+
+    border: 2px solid white;
+}
+
+
+/* AI TEXT */
+
+.ai-text .coming {
+    display: inline-block;
+
+    margin-bottom: 8px;
+
+    padding: 5px 12px;
+
+    border-radius: 15px;
+
+    background: rgba(255,255,255,.12);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.ai-text h2 {
+    font-size: 25px;
+
+    margin-bottom: 5px;
+}
+
+.ai-text p {
+    max-width: 460px;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    color: rgba(255,255,255,.88);
+}
+
+.ai-button {
+    margin-top: 12px;
+
+    padding: 10px 23px;
+
+    border: 1px solid rgba(255,255,255,.5);
+
+    border-radius: 25px;
+
+    background: rgba(255,255,255,.22);
+
+    color: white;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+/* AI FEATURES */
+
+.ai-features {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.ai-feature {
+    padding: 8px 14px;
+
+    border-radius: 20px;
+
+    border: 1px solid rgba(255,255,255,.25);
+
+    background: rgba(255,255,255,.10);
+
+    font-size: 11px;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+footer {
+    min-height: 110px;
+
+    padding: 22px 7%;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr 1fr;
+
+    align-items: center;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            120deg,
+            #28105e,
+            #170943
+        );
+}
+
+
+/* FOOTER LOGO */
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-symbol {
+    font-size: 45px;
+}
+
+.footer-title {
+    font-family: "Playfair Display", serif;
+
+    font-size: 24px;
+
+    letter-spacing: 4px;
+}
+
+.footer-subtitle {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 7px;
+
+    letter-spacing: 5px;
+}
+
+
+/* FOOTER QUOTE */
+
+.footer-quote {
+    text-align: center;
+
+    font-family: "Playfair Display", serif;
+
+    font-style: italic;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+
+/* SOCIAL */
+
+.social {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+}
+
+.social span {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.12);
+
+    font-size: 13px;
+}
+
+
+/* COPYRIGHT */
+
+.copyright {
+    grid-column: 1 / -1;
+
+    text-align: center;
+
+    margin-top: 12px;
+
+    font-size: 9px;
+
+    opacity: .75;
+}
+
+
+/* =====================================================
+   NAME POPUP
+===================================================== */
+
+.name-popup {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(35,10,70,.55);
+
+    backdrop-filter: blur(15px);
+}
+
+.name-card {
+    width: min(400px,90%);
+
+    padding: 38px 30px;
+
+    text-align: center;
+
+    border-radius: 30px;
+
+    background: rgba(255,255,255,.80);
+
+    border: 1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 25px 70px rgba(50,10,100,.3);
+
+    backdrop-filter: blur(25px);
+}
+
+.name-logo {
+    width: 65px;
+    height: 65px;
+
+    margin: auto;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8d35ff,
+            #5110c3
+        );
+
+    color: white;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 32px;
+
+    box-shadow:
+        0 12px 25px rgba(90,20,200,3);
+}
+.name-card h2{
+    margin-top: 15px;
+    color: 32105c;
+    font-family: "playfair Dispaly", serif;
+}
+.name-card p{
+    margin: 7px 0 20px;
+    color: #725c85;
+}
+.name-card input{
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid #d8c5ef;
+    outline: none;
+    font-size: 15px;
+    background: rgba(255,255,255,.85);
+}
+.name-card button{
+    width: 100%;
+    margin-top: 15px;
+    padding: 14px;
+    border: none;
+    border-radius: 25px;
+    background: 
+    linear-gradient( 135deg,#812aff,#4e12c7);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+/**RESPONSIVE*/
+@media(max-width:850x){
+    .navbar{
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .logo{
+        min-width: auto;
+    }
+    .nav-links{
+        order: 3;
+        width: 100%;
+        gap: 20px;
+    }
+    .hero{
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .hero-content{
+        padding: 25px 0;
+    }
+    .hero h1,
+    .hero p{
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .hero-art{
+        height: 350px;
+    }
+    .class-grid{
+        grid-template-columns: ifr;
+    }
+    .steps-grid{
+        grid-template-columns: ifr ifr;
+        row-gap: 40px;
+    }
+    .step:not(:last-child)::after{
+        display: none;
+    }
+    .ai-section{
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 20px;
+    }
+    .ai-text p{
+        margin: auto;
+    }
+    .ai-features{
+        max-width: 350px;
+        margin: auto;
+    }
+    footer{
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 18px;
+    }
+    .footer-logo
+    .social{
+        justify-content: center;
+    }
+}
+@media(max-width:550px){
+    .nav-links{
+        gap: 12px;
+    }
+    .nav-links a{
+        font-size: 12px;
+    }
+    .hero h1{
+        font-size: 42px;
+    }
+    .hero-art{
+        transform: scale(.82);
+    }
+    .class-section{
+        padding: 20px 15px;
+    }
+    .section-title{
+        font-size: 28px;
+    }
+    .steps-grid{
+        grid-template-columns: 1fr;
+    }
+    .ai-section{
+        padding: 25px 18px;
+    }
+    .orb{
+        right: -20px;
+    }
+    .books{
+        right: -20px;
+    }
+}
+</style>
+</head>
+<!-- NAVBAR-->
+ <div class="nav-container">
+    <nav class="navbar">
+        <a href="#" class="logo">
+            <div class="logo-symbol"📖>
+        </div>
+        <div>
+            <div class="questa-logo">
+                 <img src="ChatGPT Image Sep 13, 2026, 10_13_04 PM.png" alt="QUESTA Logo">
+                 <h1>QUESTA</h1>
+                 <span>STUDY BUDDY</span>
+                </div>
+                <style>
+                    .questa-logo{
+                        text-align: center;
+                    }
+                    .questa-logo img{
+                        width: 70px;
+                        height: 70px;
+                        object-fit: contain;
+                        display: block;
+                        margin: 0 auto 5px;
+                    }
+                    .questa-logo h1{
+                        margin: 0;
+                        font-family:Georgia, serif ;
+                        font-size: 42px;
+                        letter-spacing: 5px;
+                        color: #35118c;
+                    }
+                    .questa-logo span{
+                        display: block;
+                        margin-top: 4px;
+                        font-size: 9px;
+                        letter-spacing: 6px;
+                        font-weight: bold;
+                        color: #5b3ca0;
+                    }
+                </style>
+        </div>
+        </a>
+        <div class="nav-links"> 
+            <a href="#" class="active">
+                Home
+            </a>
+            <a href="#questionBanks">
+                Question Banks
+            </a>        
+            <a href="#ai">
+                Ask AI
+            </a>
+            <a href="#about">
+                About
+            </a>
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-btn" 
+            onclick="window.location.href='search.html' ">
+                <span class="search"></span>
+            </button>
+
+        </div>
+    </nav>
+ </div>
+ <!--HERO-->
+ <section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">
+            📖WELCOME TO QUESTA
+        </div>
+        <H1>
+            Your Smart
+            <br>
+            <span> Study Buddy</span>
+        </H1>
+        <p> Find previous year examination question papers, prepare quickly and smarter
+        </p>
+        <a href="question-banks.html" class="explore-btn">
+                ↗️ Explore Question Banks
+        </a>
+    </div>
+    <!-- HERO ART -->
+
+<div class="hero-art">
+
+<div class="orb"></div>
+
+<div class="note learn">
+
+Learn<br>
+
+Practice<br>
+
+Prepare♡
+
+</div>
+
+<div class="note future">
+
+Better<br>
+
+Grades<br>
+
+Brighter<br>
+
+Future♡
+
+</div>
+
+<!-- BOOKS -->
+
+<div class="books">
+
+<div class="book one"></div>
+
+<div class="book two"></div>
+
+<div class="book three"></div>
+
+<div class="open-book">
+
+<div class="page left"></div>
+
+<div class="page right"></div>
+</div>
+
+</div>
+ </section>
+ <!--CLAS  SECTION-->
+ <section
+    class="class-section"
+    id="questionBanks"
+ >
+    <span class="section-label">
+        START YOUR PREPARATION
+    </span>   
+    <h2 class="section-title">
+        Choose Your Class
+    </h2>
+
+    <div class="class-grid">
+        <!--10-->
+        <div class="class-card">
+            <div class="grade-icon">
+                📘
+            </div>
+        <h3>
+            10th Grades
+        </h3>    
+            <p>
+                Examination Question papers
+            </p>
+            <a href="question-banks.html" class="explore-btn">
+                Explore →
+            </a>
+        </div>
+        <!--11-->
+        <div class="class-card">
+            <div class="grade-icon">
+                📗
+            </div>
+            <h3>
+                11th Grade
+            </h3>
+            <p>
+                Pervious-year examination papers
+            </p>
+             <a href="question-banks.html" class="explore-btn">
+                Explore →
+            </a>
+            </button>
+        </div>
+        <!--12-->
+        <div class="class-card">
+            <div class="grade-icon"> 
+                📕
+            </div>
+            <h3>
+                12th Grade
+            </h3>
+            <p>
+                exam question bank
+            </p>    
+            <a href="question-banks.html" class="explore-btn">
+                Explore →
+            </a>
+        </div>
+    </div>
+</section>        
+<!--FOUR STEP SECTION-->
+<section class="steps-section">
+    <span class="section-label">
+        SIMPLE & FAST
+    </span>
+    <h2 class="section-title">
+        Find Your Question Paper
+    </h2>
+    <div class="steps-grid">
+        <div class="step">
+            <div class="step-icon">
+                🎓
+            </div>
+            <div class="step-number">
+                01
+            </div>
+            <h3>
+                Class
+            </h3>
+            <p>
+                Choose your grade.
+            </p>
+        </div>
+        <div class="step">
+            <div class="step-icon">
+                📅
+            </div>
+            <div class="step-number">
+                02
+            </div>
+            <h3>
+                year
+            </h3>
+            <p>
+                Select the examination year 
+            </p>
+        </div>
+        <div class="step">
+            <div class="step-icon">
+                📖
+            </div>
+            <div class="step-number">
+                03
+            </div>
+            <h3>
+                Subject
+            </h3>
+            <p>
+                Choose Your Subject.
+            </p>
+        </div>
+        <div class="step">
+            <div class="step-icon">
+                📄
+            </div>    
+            <div class="step-number">
+                04
+            </div>
+            <h3>
+                Exam Paper
+            </h3>
+            <p>
+                Choose quarterly, half-yearly or public exam
+            </p>
+        </div>
+    </div>
+</section>
+ 
+<!--AI STUDY BUDDY-->
+<section
+    class="ai-section"
+    id="ai"
+>
+    <!--ROBOT-->
+    <div class="ai-robot">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Robot head -->
+        <rect x="35" y="25" width="130" height="105"
+              rx="45" fill="#F5F0FF"/>
+
+        <!-- Antenna -->
+        <path d="M100 25 V12" stroke="#F5F0FF" stroke-width="5"/>
+        <circle cx="100" cy="9" r="7" fill="#C99AFF"/>
+
+        <!-- AI circuit pattern -->
+        <path d="M75 45 L85 35 L100 35 L110 45 L125 45"
+              stroke="#A879E8" stroke-width="2.5" fill="none"/>
+        <circle cx="75" cy="45" r="3" fill="#A879E8"/>
+        <circle cx="125" cy="45" r="3" fill="#A879E8"/>
+
+        <!-- Glowing eyes -->
+        <circle cx="72" cy="78" r="9" fill="#7540C5"/>
+        <circle cx="128" cy="78" r="9" fill="#7540C5"/>
+
+        <!-- Smile -->
+        <path d="M82 99 Q100 111 118 99"
+              stroke="#7540C5" stroke-width="4"
+              fill="none" stroke-linecap="round"/>
+
+        <!-- Robot body -->
+        <rect x="55" y="130" width="90" height="48"
+              rx="23" fill="#F5F0FF"/>
+
+        <!-- Body circuit -->
+        <circle cx="100" cy="153" r="5" fill="#A879E8"/>
+        <path d="M100 153 L85 165 M100 153 L115 165"
+              stroke="#A879E8" stroke-width="2.5"
+              stroke-linecap="round"/>
+    </svg>
+</div>
+    <!--AI TEXT-->
+    <div class="ai.text">
+        <span class="coming">
+        </span>
+        <h2>
+            Meet your AI Study Buddy 🤖
+        </h2>
+        <p>
+            Get explanations, practice questions, quick quizzes and personalized study support with AI.
+        </p>
+        <button 
+             class="ai-button"
+             onclick="window.location.href='ask-ai.html'"
+             >
+             Ask AI ->
+        </button>
+    </div>
+    <!--FEATURES-->
+    <div class="feature-list">
+
+    <button class="feature-btn">
+        <span class="feature-icon">💡</span>
+        <span>Get Explanations</span>
+        <span class="feature-arrow"></span>
+    </button>
+
+    <button class="feature-btn">
+        <span class="feature-icon">📖</span>
+        <span>Practice Questions</span>
+        <span class="feature-arrow"></span>
+    </button>
+
+    <button class="feature-btn">
+        <span class="feature-icon">⚡</span>
+        <span>Quick Quizzes</span>
+        <span class="feature-arrow"></span>
+    </button>
+
+    <button class="feature-btn">
+        <span class="feature-icon">💛</span>
+        <span>Personalized Support</span>
+        <span class="feature-arrow"></span>
+    </button>
+
+</div>
+</section>    
+<!--FOOTER-->
+<footer id="about">
+    <div class="footer-logo">
+        <div class="footer-symbol">
+            <img src ="ChatGPT Image Sep 13, 2026, 09_36_11 PM.png"
+            width="50"
+            height="50">
+        </div>
+        <div class="social-section">
+
+    <h3 class="social-heading">CONNECT WITH QUESTA</h3>
+
+    <div class="social-icons">
+
+        <a href="#" class="social-icon instagram" aria-label="Instagram" title="Instagram">
+            <i class="fa-brands fa-instagram"></i>
+        </a>
+
+        <a href="#" class="social-icon youtube" aria-label="YouTube" title="YouTube">
+            <i class="fa-brands fa-youtube"></i>
+        </a>
+
+        <a href="mailto:your-email@example.com" class="social-icon email" aria-label="Email" title="Email">
+            <i class="fa-solid fa-envelope"></i>
+        </a>
+
+        <a href="#" class="social-icon linkedin" aria-label="LinkedIn" title="LinkedIn">
+            <i class="fa-brands fa-linkedin-in"></i>
+        </a>
+
+    </div>
+
+    <p class="social-caption">
+        Follow • Watch • Contact • Connect
+    </p>
+    
+
+</div>
+</footer>
+<script src="script.js"></script>
+<link rel="stylesheet" href="glow.css">
+<script>
+function toggleTheme() {
+        document.body.classList.toggle("dark-mode");
+        const icon = document.getElementById("themeIcon");
+        if 
+        (document.body.classList.contains("dark-mode")) {
+            icon.textContent ="🌙";
+        } else {
+            icon.textContent ="🌞"
+        }
+    }
+    </script>
+</body>
+</html>

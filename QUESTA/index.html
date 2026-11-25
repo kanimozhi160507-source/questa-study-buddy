@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="ChatGPT Image Sep 13, 2026, 09_36_11 PM.png">
+    <title>QUESTA - Study Buddy</title>
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>QUESTA - Login</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-family: Arial, sans-serif;
+
+            background:
+                radial-gradient(circle at 15% 20%, #ffffff 0%, transparent 25%),
+                radial-gradient(circle at 85% 10%, #c99cff 0%, transparent 30%),
+                linear-gradient(135deg, #f7f1ff, #e4d2ff, #cdb0fa);
+
+            overflow: hidden;
+        }
+
+        /* Background circles */
+
+        body::before {
+            content: "";
+            position: absolute;
+
+            width: 400px;
+            height: 400px;
+
+            left: -180px;
+            bottom: -100px;
+
+            border-radius: 50%;
+
+            background: rgba(126, 44, 220, 0.15);
+
+            filter: blur(5px);
+        }
+
+        body::after {
+            content: "";
+            position: absolute;
+
+            width: 350px;
+            height: 350px;
+
+            right: -150px;
+            top: -100px;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.35);
+
+            filter: blur(5px);
+        }
+
+        /* Login Card */
+
+        .login-card {
+            position: relative;
+            z-index: 2;
+
+            width: 390px;
+            max-width: 90%;
+
+            padding: 40px 35px;
+
+            text-align: center;
+
+            border-radius: 32px;
+
+            background: rgba(255, 255, 255, 0.38);
+
+            border: 1px solid rgba(255, 255, 255, 0.8);
+
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+
+            box-shadow:
+                0 25px 70px rgba(70, 25, 140, 0.20),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+
+        /* Logo */
+
+        .questa-logo img {
+            width: 75px;
+            height: 75px;
+
+            object-fit: contain;
+
+            margin-bottom: 8px;
+        }
+
+        .questa-logo h1 {
+            font-family: Georgia, serif;
+
+            font-size: 36px;
+
+            letter-spacing: 5px;
+
+            color: #35118c;
+        }
+
+        .questa-logo span {
+            display: block;
+
+            margin-top: 4px;
+
+            font-size: 8px;
+
+            letter-spacing: 5px;
+
+            font-weight: bold;
+
+            color: #654a91;
+        }
+
+        /* Heading */
+
+        .login-card h2 {
+            margin-top: 28px;
+
+            font-family: Georgia, serif;
+
+            font-size: 28px;
+
+            color: #24105d;
+        }
+
+        .login-card p {
+            margin-top: 7px;
+            margin-bottom: 25px;
+
+            font-size: 13px;
+
+            color: #6b5a83;
+        }
+
+        /* Input Box */
+
+        .input-box {
+            text-align: left;
+
+            margin-bottom: 17px;
+        }
+
+        .input-box label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            color: #32136d;
+        }
+
+        .input-box input {
+            width: 100%;
+
+            padding: 14px 16px;
+
+            border: 1px solid rgba(111, 60, 180, 0.25);
+
+            border-radius: 15px;
+
+            outline: none;
+
+            font-size: 14px;
+
+            color: #29105e;
+
+            background: rgba(255, 255, 255, 0.65);
+
+            transition: 0.3s;
+        }
+
+        .input-box input:focus {
+            border-color: #7526df;
+
+            box-shadow:
+                0 0 0 4px rgba(117, 38, 223, 0.10);
+        }
+
+        /* Login Button */
+
+        .login-btn {
+            width: 100%;
+
+            margin-top: 8px;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 30px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #8b2cff,
+                    #5010bd
+                );
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 12px 28px rgba(90, 20, 190, 0.30);
+
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 17px 35px rgba(90, 20, 190, 0.40);
+        }
+
+        /* Bottom Text */
+
+        .bottom-text {
+            margin-top: 20px;
+
+            font-size: 11px;
+
+            color: #75648b;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 500px) {
+
+            .login-card {
+                padding: 32px 24px;
+            }
+
+            .questa-logo img {
+                width: 65px;
+                height: 65px;
+            }
+
+            .questa-logo h1 {
+                font-size: 30px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- LOGIN CARD -->
+
+    <div class="login-card">
+
+        <!-- QUESTA LOGO -->
+
+        <div class="questa-logo">
+
+            <img src="ChatGPT Image Sep 13, 2026, 10_13_04 PM.png" alt="QUESTA Logo">
+
+            <h1>QUESTA</h1>
+
+            <span>STUDY BUDDY</span>
+
+        </div>
+
+
+        <!-- LOGIN TITLE -->
+
+        <h2>Welcome👋</h2>
+
+        <p>
+            Login to start your learning journey.
+        </p>
+
+
+        <!-- USERNAME / ID -->
+
+        <div class="input-box">
+
+            <label for="username">
+                Username or ID
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                placeholder="Enter your username or ID"
+            >
+
+        </div>
+
+
+        <!-- PASSWORD -->
+
+        <div class="input-box">
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+            >
+
+        </div>
+
+
+        <!-- LOGIN -->
+
+        <button
+            class="login-btn"
+            onclick="loginUser()"
+        >
+            Login →
+        </button>
+
+
+        <div class="bottom-text">
+            Your smart study buddy is waiting for you.
+        </div>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+        function loginUser() {
+
+            const username =
+                document.getElementById("username").value.trim();
+
+            const password =
+                document.getElementById("password").value.trim();
+
+
+            if (username === "" || password === "") {
+
+                alert("😊Please enter your username🪴 and password🔑.");
+
+                return;
+            }
+
+
+            /*
+             * For now this is a front-end prototype.
+             * It will open your main homepage.
+             */
+
+            window.location.href = "index1.html";
+
+        }
+
+    </script>
+</body>
+</html>
